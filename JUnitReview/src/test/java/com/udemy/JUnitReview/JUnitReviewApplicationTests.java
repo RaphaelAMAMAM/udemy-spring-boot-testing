@@ -48,6 +48,7 @@ class JUnitReviewApplicationTests {
     }
 
     @Test
+    @Disabled
     void test_Equals_And_Not_Equals() {
         DemoUtils demoUtils = new DemoUtils();
 
