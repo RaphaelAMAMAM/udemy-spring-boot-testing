@@ -10,12 +10,15 @@ public class FizzBuzz {
 
     public static String compute(int i) {
 
-        if (i % 3 == 0) {
-            return "Fizz";
-        } else if (i % 5 == 0){
-            return "Buzz";
-        }
+        StringBuilder result = new StringBuilder();
 
-        return null;
+        if (i % 3 == 0) {
+            result.append("Fizz");
+        }
+        if (i % 5 == 0) {
+            result.append("Buzz");
+        }
+        return result.isEmpty() ? String.valueOf(i) : result.toString();
+
     }
 }
