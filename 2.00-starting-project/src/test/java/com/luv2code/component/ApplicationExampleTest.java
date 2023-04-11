@@ -46,6 +46,7 @@ public class ApplicationExampleTest {
 
     @BeforeEach
     void setUp() {
+        CollegeStudent collegeStudent = new CollegeStudent();
         count = count + 1;
         System.out.println("Testing: " + appInfo + " which is " + appDescription +
                 " Version: " + appVersion + ". Execution of test method " + count);
