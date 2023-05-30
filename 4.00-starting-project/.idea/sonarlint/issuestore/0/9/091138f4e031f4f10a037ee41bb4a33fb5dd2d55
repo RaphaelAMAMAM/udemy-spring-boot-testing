@@ -1,0 +1,17 @@
+
+^
+java:S1192t"HDefine a constant instead of duplicating this literal "science" 3 times.(Ô«Ë­
+c
+java:S1192z"HDefine a constant instead of duplicating this literal "history" 3 times.(‘ÀâŸøÿÿÿÿ
+Š
+java:S1488g"oImmediately return this expression instead of assigning it to the temporary variable "gradebookCollegeStudent".(¾Ö®ìùÿÿÿÿ
+\
+java:S1126F"AReplace this if-then-else statement by a single return statement.(ºáèûÿÿÿÿÿ
+n
+java:S3776Ã"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ê­½‹ÿÿÿÿÿ
+T
+java:S1155ø">Use isEmpty() to check whether the collection is empty or not.(ˆ¨³M
+Z
+java:S1155ý">Use isEmpty() to check whether the collection is empty or not.(­ª¸þÿÿÿÿ
+U
+java:S1155‚">Use isEmpty() to check whether the collection is empty or not.(±–»±
