@@ -27,10 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
 
 
 @TestPropertySource("/application-test.properties")
@@ -146,7 +149,7 @@ public class GradebookControllerTest {
     student.setLastname("Darby");
     student.setEmailAddress("aa@a.com");
 
-    mockMvc.perform(post("/")
+    mockMvc.perform(MockMvcRequestBuilders.post("/")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(student)))
             .andExpect(status().isOk())
@@ -165,7 +168,39 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
 
         assertFalse(studentDao.findById(1).isPresent());
-
-
     }
+
+    @Test
+    void deleteStudentHttpRequestErrorPage() throws Exception {
+        assertFalse(studentDao.findById(0).isPresent());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/{id}", 0))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+    @Test
+    void studentInformationHttpRequest() throws Exception {
+        Optional<CollegeStudent> student = studentDao.findById(1);
+        assertTrue(student.isPresent());
+        mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")));
+    }
+
+    @Test
+    void studentInformationHttpRequestErrorPage() throws Exception {
+        Optional<CollegeStudent> student = studentDao.findById(0);
+        assertFalse(student.isPresent());
+        mockMvc.perform(MockMvcRequestBuilders.get("/studentInformation/{id}", 0))
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
 }
