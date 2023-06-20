@@ -2,6 +2,7 @@ package com.luv2code.springmvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luv2code.springmvc.models.CollegeStudent;
+import com.luv2code.springmvc.models.MathGrade;
 import com.luv2code.springmvc.repository.HistoryGradesDao;
 import com.luv2code.springmvc.repository.MathGradesDao;
 import com.luv2code.springmvc.repository.ScienceGradesDao;
@@ -48,8 +49,8 @@ public class GradebookControllerTest {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Mock
-    StudentAndGradeService studentAndGradeService;
+    //@Mock
+    //StudentAndGradeService studentAndGradeService;
 
     @Autowired
     private JdbcTemplate jdbc;
@@ -220,7 +221,7 @@ public class GradebookControllerTest {
     }
 
     @Test
-    void createAValidGradeHttpRequestStudentDoesNotExistEmpryResponse() throws Exception {
+    void createAValidGradeHttpRequestStudentDoesNotExistEmptyResponse() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/grades")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("grade", "85.00")
@@ -228,6 +229,50 @@ public class GradebookControllerTest {
                         .param("studentId", "0"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+    @Test
+    void createNonValidGradeHttpRequestGradeTypeDoesNotExistEmptyResponse() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/grades")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("grade", "85.00")
+                .param("gradeType", "literature")
+                .param("studentId", "1"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+    @Test
+    void deleteAValidGradeHttpRequest() throws Exception {
+        Optional<MathGrade> mathGrade = mathGradeDao.findById(1);
+        assertTrue(mathGrade.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 1, "math"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.firstname", is("Eric")))
+                .andExpect(jsonPath("$.lastname", is("Roby")))
+                .andExpect(jsonPath("$.emailAddress", is("eric.roby@luv2code_school.com")))
+                .andExpect(jsonPath("$.studentGrades.mathGradeResults", hasSize(0)));
+    }
+
+    @Test
+    void deleteAValidGradeHttpRequestStudentIdDoesNotExistResponse() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 2, "math"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
+    }
+
+    @Test
+    void deleteANonValidGradeHttpRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/grades/{id}/{gradeType}", 1, "literature"))
+                .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status", is(404)))
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
     }
